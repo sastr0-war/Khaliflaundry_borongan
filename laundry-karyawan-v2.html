@@ -587,14 +587,10 @@ function doExport(){
     }))
   };
 
-  // Download file JSON
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url; a.download=`hasil-${DB.myName}-${myTask.date}.json`;
-  a.click(); URL.revokeObjectURL(url);
+  // Encode jadi URL — istri tinggal klik link, auto-import
+  const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  const adminUrl=`https://sastr0-war.github.io/Khaliflaundry_borongan/laundry-admin-v2.html#hasil=${encoded}`;
 
-  // Juga buka WA dengan ringkasan teks
   const done=myTask.items.filter(i=>i.status==='done');
   const totalUpah=done.reduce((s,i)=>s+calcUpah(i),0);
   const lines=done.map(it=>{
@@ -602,11 +598,11 @@ function doExport(){
     return `${it.no}. ${it.customer} — ${svc.name}${it.actualKg?` ${it.actualKg}kg`:''}${it.actualQty?` ${it.actualQty}item`:''} (${it.jamMulai}–${it.jamSelesai})`;
   }).join('\n');
 
-  const msg=`🧺 *Laporan Kerja ${DB.myName}*\n📅 ${formatDate(myTask.date)}\n\n${lines}\n\n💰 Total upah: Rp ${totalUpah.toLocaleString('id')}\n\n_File hasil sudah di-download, kirim ke ibu_`;
-  setTimeout(()=>{window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank')},800);
+  const msg=`🧺 *Laporan ${DB.myName}*\n📅 ${formatDate(myTask.date)}\n\n${lines}\n\n💰 Total upah: Rp ${totalUpah.toLocaleString('id')}\n\n📲 *Klik link ini untuk import otomatis:*\n${adminUrl}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
 
   closeSheet('sh-export');
-  toast('📤 File + WA siap dikirim!');
+  toast('📤 WA siap dikirim ke ibu!');
 }
 
 // ══════════════════════════════════════════

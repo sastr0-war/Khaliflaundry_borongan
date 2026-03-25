@@ -767,6 +767,35 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 // INIT
 renderNav();renderBuat();
 document.getElementById('t-date').value=todayStr();
+
+// Auto-import dari link WA (URL hash #hasil=...)
+(function(){
+  const hash=window.location.hash;
+  if(!hash.includes('#hasil='))return;
+  const encoded=hash.split('#hasil=')[1];
+  try{
+    const json=decodeURIComponent(escape(atob(encoded)));
+    const data=JSON.parse(json);
+    if(data.type!=='HASIL')return;
+    history.replaceState(null,'',window.location.pathname);
+    // Cek duplikat
+    if(DB.hasil.find(h=>h.taskId===data.taskId)){
+      setTimeout(()=>{goTo('masuk');toast('⚠️ Data ini sudah pernah di-import');},400);
+      return;
+    }
+    // Simpan langsung
+    DB.hasil.push({...data,importedAt:new Date().toISOString()});
+    const t=DB.tasks.find(t=>t.id===data.taskId);
+    if(t)t.status='done';
+    saveDB();
+    setTimeout(()=>{
+      goTo('masuk');
+      toast(`✅ Laporan ${data.worker} masuk otomatis!`);
+    },400);
+  }catch(e){
+    console.error('Auto-import error:',e);
+  }
+})();
 </script>
 </body>
 </html>
