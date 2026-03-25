@@ -23,14 +23,14 @@
   --rad:14px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t);font-family:var(--ff)}
+html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--ff)}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:radial-gradient(ellipse 80% 35% at 50% -5%,rgba(45,235,168,0.09) 0%,transparent 55%),
   radial-gradient(ellipse 40% 30% at 0% 100%,rgba(96,165,250,0.04) 0%,transparent 50%)}
 
 /* LAYOUT */
-.app{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column;max-width:430px;margin:0 auto}
-.topbar{padding:14px 18px 12px;border-bottom:1px solid var(--b1);flex-shrink:0;background:rgba(8,15,13,0.92);backdrop-filter:blur(16px)}
+.app{position:relative;z-index:1;max-width:430px;margin:0 auto}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:99;padding:14px 18px 12px;border-bottom:1px solid var(--b1);background:rgba(8,15,13,0.96);backdrop-filter:blur(16px);max-width:430px;margin:0 auto}
 .topbar-inner{display:flex;align-items:center;justify-content:space-between}
 .logo{font-size:17px;font-weight:800;letter-spacing:-.5px}
 .logo b{color:var(--g)}
@@ -38,8 +38,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .worker-chip:active{opacity:.8}
 .wav{width:26px;height:26px;background:var(--g);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#080f0d}
 .wname{font-size:13px;font-weight:700}
-.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:84px}
-.bnav{position:absolute;bottom:0;left:0;right:0;background:rgba(8,15,13,0.96);backdrop-filter:blur(20px);border-top:1px solid var(--b1);display:flex;z-index:100}
+.content{padding:80px 16px 80px;min-height:100vh}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,15,13,0.98);backdrop-filter:blur(20px);border-top:1px solid var(--b1);display:flex;z-index:100;max-width:430px;margin:0 auto}
 .nb{flex:1;padding:10px 4px 12px;text-align:center;cursor:pointer;border-top:2px solid transparent;transition:.2s}
 .nb.on{border-top-color:var(--g)}
 .nb .ni{font-size:19px;line-height:1}
