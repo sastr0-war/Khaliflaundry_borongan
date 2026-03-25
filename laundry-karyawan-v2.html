@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#080f0d">
+<title>Khalif Laundry — Karyawan</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<style>
+:root{
+  --bg:#080f0d;--s1:#0f1a16;--s2:#162119;--s3:#1d2b24;
+  --b1:#213028;--b2:#2c3f34;
+  --g:#2deba8;--gg:rgba(45,235,168,0.13);
+  --y:#fbbf24;--yg:rgba(251,191,36,0.1);
+  --b:#60a5fa;--bg2:rgba(96,165,250,0.1);
+  --r:#f87171;--rg:rgba(248,113,113,0.1);
+  --t:#d8f0e8;--t2:#6a9e86;--t3:#3a5e4a;
+  --ff:'Plus Jakarta Sans',sans-serif;
+  --fm:'JetBrains Mono',monospace;
+  --rad:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t);font-family:var(--ff)}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 80% 35% at 50% -5%,rgba(45,235,168,0.09) 0%,transparent 55%),
+  radial-gradient(ellipse 40% 30% at 0% 100%,rgba(96,165,250,0.04) 0%,transparent 50%)}
+
+/* LAYOUT */
+.app{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column;max-width:430px;margin:0 auto}
+.topbar{padding:14px 18px 12px;border-bottom:1px solid var(--b1);flex-shrink:0;background:rgba(8,15,13,0.92);backdrop-filter:blur(16px)}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:17px;font-weight:800;letter-spacing:-.5px}
+.logo b{color:var(--g)}
+.worker-chip{display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--b2);border-radius:20px;padding:5px 12px 5px 6px;cursor:pointer;transition:.15s}
+.worker-chip:active{opacity:.8}
+.wav{width:26px;height:26px;background:var(--g);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:#080f0d}
+.wname{font-size:13px;font-weight:700}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:84px}
+.bnav{position:absolute;bottom:0;left:0;right:0;background:rgba(8,15,13,0.96);backdrop-filter:blur(20px);border-top:1px solid var(--b1);display:flex;z-index:100}
+.nb{flex:1;padding:10px 4px 12px;text-align:center;cursor:pointer;border-top:2px solid transparent;transition:.2s}
+.nb.on{border-top-color:var(--g)}
+.nb .ni{font-size:19px;line-height:1}
+.nb .nl{font-size:8.5px;color:var(--t3);margin-top:3px;letter-spacing:.6px;text-transform:uppercase;font-family:var(--fm)}
+.nb.on .nl{color:var(--g)}
+
+/* PAGE */
+.page{display:none;animation:fu .2s ease}
+.page.on{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* TYPE */
+.ptitle{font-size:21px;font-weight:800;letter-spacing:-.5px;margin-bottom:3px}
+.psub{font-size:11px;color:var(--t2);margin-bottom:16px;font-family:var(--fm)}
+.slabel{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:8px;font-family:var(--fm)}
+
+/* FORM */
+input,select,textarea{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:10px 13px;color:var(--t);font-family:var(--ff);font-size:14px;outline:none;transition:.2s;-webkit-appearance:none}
+input:focus,select:focus{border-color:var(--g);box-shadow:0 0 0 3px var(--gg)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* BTN */
+.btn{display:block;width:100%;padding:13px;border-radius:12px;border:none;font-family:var(--ff);font-weight:700;font-size:14px;cursor:pointer;transition:.18s;text-align:center}
+.btn-g{background:var(--g);color:#080f0d}.btn-g:active{transform:scale(.98)}
+.btn-o{background:var(--s2);border:1px solid var(--b2);color:var(--t2)}
+.bsm{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:8px;border:none;font-family:var(--ff);font-weight:600;font-size:11px;cursor:pointer;transition:.15s}
+
+/* CARD */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad);padding:15px;margin-bottom:10px}
+.card-g{border-color:rgba(45,235,168,0.25);background:rgba(45,235,168,0.04)}
+.card-y{border-color:rgba(251,191,36,0.25);background:rgba(251,191,36,0.04)}
+
+/* PILLS */
+.pill{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.pill-w{background:var(--yg);color:var(--y);border:1px solid rgba(251,191,36,.25)}
+.pill-p{background:var(--gg);color:var(--g);border:1px solid rgba(45,235,168,.25)}
+.pill-d{background:var(--bg2);color:var(--b);border:1px solid rgba(96,165,250,.2)}
+
+/* PROGRESS */
+.prog-bar{height:5px;background:var(--s3);border-radius:5px;overflow:hidden;margin-top:8px}
+.prog-fill{height:100%;background:var(--g);border-radius:5px;transition:width .4s ease}
+
+/* CUST CARD */
+.ccard{background:var(--s2);border:1px solid var(--b1);border-radius:12px;padding:13px;margin-bottom:8px;transition:border-color .2s}
+.ccard.active{border-color:rgba(45,235,168,.4)}
+.ccard.done{opacity:.55}
+.cc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.cc-name{font-weight:800;font-size:15px}
+.cc-svc{font-size:11px;color:var(--t2);margin-top:2px}
+.cc-note{margin-top:8px;padding:7px 10px;background:var(--yg);border:1px solid rgba(251,191,36,.2);border-radius:8px;font-size:12px;color:var(--y)}
+.cc-done-info{display:flex;gap:12px;margin-top:8px;font-size:12px;font-family:var(--fm)}
+.cc-done-info span{color:var(--g)}
+
+/* INPUT AREA */
+.iarea{margin-top:10px;padding:12px;background:var(--s1);border:1px solid rgba(45,235,168,.2);border-radius:10px}
+.iarea-lbl{font-size:10px;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-family:var(--fm)}
+.irow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.irow label{display:block;font-size:10px;color:var(--t2);margin-bottom:4px;font-family:var(--fm)}
+.irow input{padding:8px 11px;font-size:13px}
+
+/* STAT */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.sbox{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:13px}
+.sval{font-size:22px;font-weight:800}
+.sval.vg{color:var(--g)}.sval.vy{color:var(--y)}.sval.vb{color:var(--b)}
+.slbl2{font-size:9px;color:var(--t3);margin-top:4px;text-transform:uppercase;letter-spacing:.8px;font-family:var(--fm)}
+
+/* UPAH ROW */
+.urow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--b1)}
+.urow:last-child{border-bottom:none}
+.uc{font-weight:600;font-size:13px}
+.ud{font-size:11px;color:var(--t2);margin-top:2px}
+.uv{font-weight:800;font-size:14px;color:var(--g);font-family:var(--fm)}
+
+/* QR SCANNER */
+.qr-wrap{border-radius:14px;overflow:hidden;margin-bottom:14px}
+#qr-reader{width:100%!important}
+#qr-reader video{border-radius:14px!important}
+#qr-reader img{display:none!important}
+
+/* OVERLAY */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px)}
+.overlay.open{display:flex}
+.sheet{background:var(--s1);border:1px solid var(--b2);border-radius:20px 20px 0 0;padding:22px;width:100%;max-width:430px;max-height:88vh;overflow-y:auto;animation:su .25s ease}
+@keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-title{font-size:17px;font-weight:800;margin-bottom:4px}
+.sheet-sub{font-size:11px;color:var(--t2);margin-bottom:16px;font-family:var(--fm)}
+.sheet-close{float:right;background:none;border:none;color:var(--t2);font-size:22px;cursor:pointer;margin-top:-4px}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--s2);border:1px solid var(--b2);color:var(--t);padding:10px 18px;border-radius:24px;font-size:12px;font-weight:500;z-index:999;opacity:0;transition:.25s;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.divider{height:1px;background:var(--b1);margin:14px 0}
+.empty{text-align:center;padding:36px 16px;color:var(--t3)}
+.empty-ico{font-size:38px;margin-bottom:8px}
+.empty-txt{font-size:13px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="logo">Khalif <b>Laundry</b></div>
+      <div class="worker-chip" onclick="openSheet('sh-ganti')">
+        <div class="wav" id="wav">E</div>
+        <div class="wname" id="wname">Evi</div>
+        <span style="font-size:11px;color:var(--t3)">▾</span>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <!-- TUGAS -->
+    <div class="page on" id="pg-tugas">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+        <div>
+          <div class="ptitle" id="hello-name">Halo, Evi!</div>
+          <div class="psub" id="hello-sub">Belum ada task</div>
+        </div>
+        <button class="bsm" style="background:var(--gg);border:1px solid rgba(45,235,168,.3);color:var(--g)" onclick="openScanner()">
+          📷 Scan QR
+        </button>
+      </div>
+      <div id="task-list"></div>
+    </div>
+
+    <!-- UPAH -->
+    <div class="page" id="pg-upah">
+      <div class="ptitle">Upah Saya</div>
+      <div class="psub" id="upah-sub">Rekap pengerjaan hari ini</div>
+      <div class="sgrid" id="upah-stats"></div>
+      <div class="slabel">Riwayat Hari Ini</div>
+      <div class="card" id="upah-list"></div>
+    </div>
+  </div>
+  <div class="bnav" id="bnav"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- SHEET: SCANNER -->
+<div class="overlay" id="sh-scan">
+  <div class="sheet">
+    <button class="sheet-close" onclick="stopScanner()">×</button>
+    <div class="sheet-title">Scan QR Task</div>
+    <div class="sheet-sub">Arahkan kamera ke QR dari ibu</div>
+    <div class="qr-wrap">
+      <div id="qr-reader"></div>
+    </div>
+    <div id="scan-status" style="text-align:center;font-size:13px;color:var(--t2);margin-bottom:14px">Menunggu QR...</div>
+    <button class="btn btn-o" onclick="stopScanner()">Batal</button>
+  </div>
+</div>
+
+<!-- SHEET: GANTI NAMA -->
+<div class="overlay" id="sh-ganti">
+  <div class="sheet">
+    <button class="sheet-close" onclick="closeSheet('sh-ganti')">×</button>
+    <div class="sheet-title">Pilih Namamu</div>
+    <div class="sheet-sub">Nama tersimpan di HP ini</div>
+    <div id="worker-name-list"></div>
+  </div>
+</div>
+
+<!-- SHEET: EXPORT -->
+<div class="overlay" id="sh-export">
+  <div class="sheet">
+    <button class="sheet-close" onclick="closeSheet('sh-export')">×</button>
+    <div class="sheet-title">Kirim Laporan</div>
+    <div class="sheet-sub" id="exp-sub">Hasil kerja hari ini</div>
+    <div id="exp-preview"></div>
+    <div style="height:10px"></div>
+    <button class="btn btn-g" onclick="doExport()">📤 Export & Kirim WhatsApp</button>
+    <div style="height:8px"></div>
+    <button class="btn btn-o" onclick="closeSheet('sh-export')">Batal</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DB
+// ══════════════════════════════════════════
+const WORKERS_DEF=['Evi','Siti','Rini','Dewi','Budi','Eko','Marlim'];
+const TARIF_DEF=[
+  {id:'s1',name:'Cuci + Setrika',unit:'kg',price:2500},
+  {id:'s2',name:'Cuci Saja',unit:'kg',price:1500},
+  {id:'s3',name:'Setrika Saja',unit:'kg',price:1000},
+  {id:'s4',name:'Lipat Saja',unit:'kg',price:800},
+  {id:'s5',name:'Sprei / Bed Cover',unit:'item',price:5000},
+  {id:'s6',name:'Jaket',unit:'item',price:4000},
+  {id:'s7',name:'Gordyn',unit:'item',price:15000},
+];
+let DB={
+  myName:'Evi',
+  workers:[...WORKERS_DEF],
+  services:[...TARIF_DEF],
+  tasks:[],
+  history:[],
+};
+function loadDB(){const d=localStorage.getItem('lk_wrk2');if(d)try{DB=JSON.parse(d)}catch{}}
+function saveDB(){localStorage.setItem('lk_wrk2',JSON.stringify(DB))}
+loadDB();
+
+let activePg='tugas', inputOpen={}, qrScanner=null;
+
+// ══════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════
+const TABS=[{id:'tugas',ico:'📋',lbl:'Task'},{id:'upah',ico:'💰',lbl:'Upah'}];
+function renderNav(){
+  document.getElementById('bnav').innerHTML=TABS.map(t=>`
+    <div class="nb${t.id===activePg?' on':''}" onclick="goTo('${t.id}')">
+      <div class="ni">${t.ico}</div><div class="nl">${t.lbl}</div>
+    </div>`).join('');
+}
+function goTo(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  activePg=id; renderNav();
+  if(id==='tugas')renderTugas();
+  if(id==='upah')renderUpah();
+}
+
+// ══════════════════════════════════════════
+// WORKER SELECTOR
+// ══════════════════════════════════════════
+function updateAvatar(){
+  document.getElementById('wav').textContent=DB.myName[0];
+  document.getElementById('wname').textContent=DB.myName;
+}
+function renderWorkerNameList(){
+  document.getElementById('worker-name-list').innerHTML=DB.workers.map(w=>`
+    <div onclick="pilihNama('${w}')" style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;cursor:pointer;margin-bottom:6px;border:1px solid ${w===DB.myName?'rgba(45,235,168,.4)':'transparent'};background:${w===DB.myName?'var(--gg)':'transparent'}">
+      <div style="width:32px;height:32px;background:${w===DB.myName?'var(--g)':'var(--s3)'};border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:${w===DB.myName?'#080f0d':'var(--t2)'}">
+        ${w[0]}
+      </div>
+      <span style="font-weight:${w===DB.myName?'800':'500'};font-size:15px">${w}</span>
+      ${w===DB.myName?'<span style="margin-left:auto;color:var(--g);font-size:18px">✓</span>':''}
+    </div>`).join('');
+}
+function pilihNama(n){
+  DB.myName=n;saveDB();updateAvatar();
+  closeSheet('sh-ganti');renderTugas();renderUpah();
+  toast(`Halo ${n}! 👋`);
+}
+
+// ══════════════════════════════════════════
+// QR SCANNER
+// ══════════════════════════════════════════
+function openScanner(){
+  openSheet('sh-scan');
+  setTimeout(()=>{
+    try{
+      qrScanner=new Html5Qrcode('qr-reader');
+      qrScanner.start(
+        {facingMode:'environment'},
+        {fps:10,qrbox:{width:240,height:240}},
+        onQRSuccess,
+        ()=>{}
+      ).catch(e=>{
+        document.getElementById('scan-status').textContent='❌ Kamera tidak bisa diakses. Izinkan kamera di browser.';
+      });
+    }catch(e){
+      document.getElementById('scan-status').textContent='❌ Scanner error: '+e.message;
+    }
+  },400);
+}
+
+function stopScanner(){
+  if(qrScanner){
+    qrScanner.stop().catch(()=>{}).finally(()=>{
+      qrScanner.clear();
+      qrScanner=null;
+      document.getElementById('qr-reader').innerHTML='';
+    });
+  }
+  closeSheet('sh-scan');
+}
+
+function onQRSuccess(text){
+  stopScanner();
+  // Parse QR content
+  let payload=null;
+  try{
+    // Format: URL#task=BASE64 atau LAUNDRY_TASK:BASE64
+    let encoded='';
+    if(text.includes('#task=')){
+      encoded=text.split('#task=')[1];
+    } else if(text.startsWith('LAUNDRY_TASK:')){
+      encoded=text.replace('LAUNDRY_TASK:','');
+    } else {
+      // Try direct JSON
+      payload=JSON.parse(text);
+    }
+    if(encoded){
+      const json=decodeURIComponent(escape(atob(encoded)));
+      payload=JSON.parse(json);
+    }
+  }catch(e){
+    toast('❌ QR tidak valid atau bukan task laundry');
+    return;
+  }
+
+  if(!payload||payload.type!=='TASK'){toast('❌ Bukan QR task laundry');return}
+
+  // Map compact fields back
+  const items=(payload.items||[]).map(it=>({
+    no: it.no,
+    customer: it.c||it.customer,
+    svcId: it.s||it.svcId,
+    estkg: it.k||it.estkg||0,
+    qty: it.q||it.qty||0,
+    note: it.n||it.note||'',
+    status:'waiting', jamMulai:'', jamSelesai:'',
+    actualKg:0, actualQty:0,
+  }));
+
+  // Cek apakah task untuk nama kita
+  if(payload.worker!==DB.myName){
+    toast(`⚠️ Task ini untuk ${payload.worker} — pastikan nama benar`);
+    DB.myName=payload.worker;
+    updateAvatar();
+  }
+
+  // Hapus task lama dari worker+date yang sama
+  DB.tasks=DB.tasks.filter(t=>!(t.worker===payload.worker&&t.date===payload.date));
+
+  DB.tasks.push({
+    taskId:payload.taskId,
+    worker:payload.worker,
+    date:payload.date,
+    items,
+    loadedAt:new Date().toISOString()
+  });
+
+  saveDB(); inputOpen={};
+  renderTugas();
+  toast(`✅ ${items.length} task dimuat untuk ${payload.worker}!`);
+}
+
+// ══════════════════════════════════════════
+// PAGE: TUGAS
+// ══════════════════════════════════════════
+function renderTugas(){
+  document.getElementById('hello-name').textContent=`Halo, ${DB.myName}!`;
+  const myTask=DB.tasks.find(t=>t.worker===DB.myName);
+
+  if(!myTask||!myTask.items.length){
+    document.getElementById('hello-sub').textContent='Belum ada task';
+    document.getElementById('task-list').innerHTML=`
+      <div class="empty">
+        <div class="empty-ico">📷</div>
+        <div class="empty-txt">Scan QR dari ibu untuk mulai<br><br>
+          <span style="font-size:11px;color:var(--t3)">Klik tombol "Scan QR" di atas</span>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const items=myTask.items;
+  const done=items.filter(i=>i.status==='done').length;
+  const allDone=done===items.length;
+  document.getElementById('hello-sub').textContent=`${done}/${items.length} selesai · ${formatDate(myTask.date)}`;
+
+  document.getElementById('task-list').innerHTML=`
+    <div class="card card-g" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:13px;font-weight:700">Task ${formatDate(myTask.date)}</div>
+        <span style="font-family:var(--fm);font-size:11px;color:var(--t2)">${done}/${items.length}</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${items.length?done/items.length*100:0}%"></div></div>
+    </div>
+
+    ${items.map(it=>renderCustCard(it,myTask.taskId)).join('')}
+
+    <div style="margin-top:14px">
+      ${allDone?
+        `<button class="btn btn-g" onclick="openExport()">📤 Semua Selesai — Kirim Laporan ke Ibu</button>`:
+        `<div style="text-align:center;font-size:12px;color:var(--t3);padding:8px">Selesaikan semua item untuk kirim laporan</div>`}
+    </div>`;
+}
+
+function renderCustCard(it,taskId){
+  const svc=DB.services.find(s=>s.id===it.svcId)||{name:it.svcId||'-',unit:'kg'};
+  const isOpen=inputOpen[it.no];
+  const stMap={waiting:'pill-w',process:'pill-p',done:'pill-d'};
+  const stLbl={waiting:'Belum',process:'Proses',done:'Selesai'};
+
+  return `<div class="ccard${it.status==='process'?' active':''}${it.status==='done'?' done':''}">
+    <div class="cc-top">
+      <div>
+        <div style="display:flex;align-items:center;gap:7px">
+          <div style="background:var(--s3);border-radius:6px;padding:2px 8px;font-family:var(--fm);font-size:11px;font-weight:700;color:var(--t2)">#${it.no}</div>
+          <div class="cc-name">${it.customer}</div>
+        </div>
+        <div class="cc-svc">${svc.name}${it.estkg?` · est. ${it.estkg} kg`:''}${it.qty?` · est. ${it.qty} item`:''}</div>
+      </div>
+      <span class="pill ${stMap[it.status]}">${stLbl[it.status]}</span>
+    </div>
+    ${it.note?`<div class="cc-note">📝 ${it.note}</div>`:''}
+    ${it.status==='done'?`
+      <div class="cc-done-info">
+        ${it.actualKg?`<span>⚖ ${it.actualKg} kg</span>`:''}
+        ${it.actualQty?`<span>📦 ${it.actualQty} item</span>`:''}
+        <span style="color:var(--t2)">🕐 ${it.jamMulai}–${it.jamSelesai}</span>
+      </div>`:''}
+    ${it.status!=='done'?`
+      <div style="display:flex;gap:8px;margin-top:10px">
+        ${it.status==='waiting'?
+          `<button class="bsm" style="background:var(--gg);border:1px solid rgba(45,235,168,.3);color:var(--g)" onclick="mulai('${taskId}',${it.no})">▶ Mulai</button>`:
+          `<button class="bsm" style="background:var(--gg);border:1px solid rgba(45,235,168,.3);color:var(--g)" onclick="toggleInput(${it.no})">
+            ${isOpen?'▲ Tutup':'✓ Selesaikan'}
+          </button>`}
+      </div>
+      ${it.status==='process'&&isOpen?`
+        <div class="iarea">
+          <div class="iarea-lbl">Input Hasil Kerja</div>
+          <div class="irow">
+            <div><label>Jam Mulai</label><input type="time" id="jm-${it.no}" value="${it.jamMulai||''}"></div>
+            <div><label>Jam Selesai</label><input type="time" id="js-${it.no}" value="${nowTime()}"></div>
+          </div>
+          ${svc.unit!=='item'?`
+            <div class="irow">
+              <div><label>Total KG</label><input type="number" id="kg-${it.no}" placeholder="0.0" step="0.1" min="0"></div>
+              <div><label>Item Satuan (opt.)</label><input type="number" id="qty-${it.no}" placeholder="0" min="0"></div>
+            </div>`:`
+            <div style="margin-bottom:10px">
+              <label style="font-size:10px;color:var(--t2);display:block;margin-bottom:4px;font-family:var(--fm)">Jumlah Item</label>
+              <input type="number" id="qty-${it.no}" placeholder="0" min="0">
+            </div>`}
+          <button class="btn btn-g" style="padding:11px" onclick="selesaikan('${taskId}',${it.no},'${svc.unit}')">Simpan ✓</button>
+        </div>`:''}
+    `:''}
+  </div>`;
+}
+
+function mulai(taskId,no){
+  const t=DB.tasks.find(t=>t.taskId===taskId);
+  if(!t)return;
+  const it=t.items.find(i=>i.no===no);
+  if(!it)return;
+  it.status='process'; it.jamMulai=nowTime();
+  saveDB(); renderTugas();
+  toast(`▶ Mulai: ${it.customer}`);
+}
+
+function toggleInput(no){inputOpen[no]=!inputOpen[no];renderTugas()}
+
+function selesaikan(taskId,no,unit){
+  const t=DB.tasks.find(t=>t.taskId===taskId);
+  if(!t)return;
+  const it=t.items.find(i=>i.no===no);
+  if(!it)return;
+
+  const jamMulai=document.getElementById(`jm-${no}`)?.value||it.jamMulai||nowTime();
+  const jamSelesai=document.getElementById(`js-${no}`)?.value||nowTime();
+  const actualKg=parseFloat(document.getElementById(`kg-${no}`)?.value||0);
+  const actualQty=parseInt(document.getElementById(`qty-${no}`)?.value||0);
+
+  if(unit!=='item'&&!actualKg){toast('❌ Isi total KG dulu!');return}
+  if(unit==='item'&&!actualQty){toast('❌ Isi jumlah item!');return}
+
+  it.status='done'; it.jamMulai=jamMulai; it.jamSelesai=jamSelesai;
+  it.actualKg=actualKg; it.actualQty=actualQty;
+  inputOpen[no]=false;
+  saveDB(); renderTugas(); renderUpah();
+  toast(`✅ Selesai: ${it.customer}`);
+}
+
+// ══════════════════════════════════════════
+// PAGE: UPAH
+// ══════════════════════════════════════════
+function renderUpah(){
+  const myTask=DB.tasks.find(t=>t.worker===DB.myName);
+  const doneItems=myTask?myTask.items.filter(i=>i.status==='done'):[];
+  const totalKg=doneItems.reduce((s,i)=>s+(i.actualKg||0),0);
+  const totalItem=doneItems.reduce((s,i)=>s+(i.actualQty||0),0);
+  const totalUpah=doneItems.reduce((s,i)=>s+calcUpah(i),0);
+
+  document.getElementById('upah-sub').textContent=`${DB.myName} · ${myTask?formatDate(myTask.date):'-'}`;
+  document.getElementById('upah-stats').innerHTML=`
+    <div class="sbox"><div class="sval vg">Rp${(totalUpah/1000).toFixed(0)}k</div><div class="slbl2">Upah Hari Ini</div></div>
+    <div class="sbox"><div class="sval vy">${totalKg.toFixed(1)}</div><div class="slbl2">Total KG</div></div>
+    <div class="sbox"><div class="sval vb">${totalItem}</div><div class="slbl2">Total Item</div></div>
+    <div class="sbox"><div class="sval" style="color:var(--t2)">${doneItems.length}</div><div class="slbl2">Order Selesai</div></div>`;
+
+  document.getElementById('upah-list').innerHTML=doneItems.length===0?
+    `<div class="empty" style="padding:22px"><div class="empty-ico">📭</div><div class="empty-txt">Belum ada yang selesai</div></div>`:
+    doneItems.map(it=>{
+      const svc=DB.services.find(s=>s.id===it.svcId)||{name:'-'};
+      return `<div class="urow">
+        <div>
+          <div class="uc">${it.customer}</div>
+          <div class="ud">${svc.name} · ${it.jamMulai}–${it.jamSelesai}${it.actualKg?` · ${it.actualKg}kg`:''}${it.actualQty?` · ${it.actualQty}item`:''}</div>
+        </div>
+        <div class="uv">Rp ${calcUpah(it).toLocaleString('id')}</div>
+      </div>`;
+    }).join('');
+}
+
+// ══════════════════════════════════════════
+// EXPORT
+// ══════════════════════════════════════════
+function openExport(){
+  const myTask=DB.tasks.find(t=>t.worker===DB.myName);
+  if(!myTask)return;
+  const done=myTask.items.filter(i=>i.status==='done');
+  const totalUpah=done.reduce((s,i)=>s+calcUpah(i),0);
+
+  document.getElementById('exp-sub').textContent=`${DB.myName} · ${formatDate(myTask.date)}`;
+  document.getElementById('exp-preview').innerHTML=`
+    <div class="card" style="margin-bottom:10px">
+      ${done.map(it=>{
+        const svc=DB.services.find(s=>s.id===it.svcId)||{name:'-'};
+        return `<div class="urow">
+          <div><div style="font-weight:600;font-size:13px">${it.customer}</div>
+          <div style="font-size:11px;color:var(--t2)">${svc.name} · ${it.jamMulai}–${it.jamSelesai}${it.actualKg?` · ${it.actualKg}kg`:''}${it.actualQty?` · ${it.actualQty}item`:''}</div></div>
+          <div style="font-weight:800;font-size:13px;color:var(--g);font-family:var(--fm)">Rp ${calcUpah(it).toLocaleString('id')}</div>
+        </div>`;
+      }).join('')}
+      <div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--b1);font-weight:800">
+        <span>Total Upah</span><span style="color:var(--g)">Rp ${totalUpah.toLocaleString('id')}</span>
+      </div>
+    </div>`;
+  openSheet('sh-export');
+}
+
+function doExport(){
+  const myTask=DB.tasks.find(t=>t.worker===DB.myName);
+  if(!myTask)return;
+
+  const payload={
+    type:'HASIL',
+    taskId:myTask.taskId,
+    worker:myTask.worker,
+    date:myTask.date,
+    selesaiAt:nowTime(),
+    items:myTask.items.map(it=>({
+      no:it.no, customer:it.customer, svcId:it.svcId,
+      svcName:(DB.services.find(s=>s.id===it.svcId)||{name:'-'}).name,
+      catatan:it.note||'',
+      jamMulai:it.jamMulai, jamSelesai:it.jamSelesai,
+      actualKg:it.actualKg, actualQty:it.actualQty,
+      status:it.status
+    }))
+  };
+
+  // Download file JSON
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=`hasil-${DB.myName}-${myTask.date}.json`;
+  a.click(); URL.revokeObjectURL(url);
+
+  // Juga buka WA dengan ringkasan teks
+  const done=myTask.items.filter(i=>i.status==='done');
+  const totalUpah=done.reduce((s,i)=>s+calcUpah(i),0);
+  const lines=done.map(it=>{
+    const svc=DB.services.find(s=>s.id===it.svcId)||{name:'-'};
+    return `${it.no}. ${it.customer} — ${svc.name}${it.actualKg?` ${it.actualKg}kg`:''}${it.actualQty?` ${it.actualQty}item`:''} (${it.jamMulai}–${it.jamSelesai})`;
+  }).join('\n');
+
+  const msg=`🧺 *Laporan Kerja ${DB.myName}*\n📅 ${formatDate(myTask.date)}\n\n${lines}\n\n💰 Total upah: Rp ${totalUpah.toLocaleString('id')}\n\n_File hasil sudah di-download, kirim ke ibu_`;
+  setTimeout(()=>{window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank')},800);
+
+  closeSheet('sh-export');
+  toast('📤 File + WA siap dikirim!');
+}
+
+// ══════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════
+function calcUpah(it){
+  const svc=DB.services.find(s=>s.id===it.svcId);
+  if(!svc)return 0;
+  return svc.unit==='item'?(it.actualQty||0)*svc.price:(it.actualKg||0)*svc.price;
+}
+function nowTime(){return new Date().toTimeString().slice(0,5)}
+function formatDate(d){return new Date(d+'T00:00:00').toLocaleDateString('id-ID',{weekday:'short',day:'numeric',month:'long'})}
+function openSheet(id){
+  document.getElementById(id).classList.add('open');
+  if(id==='sh-ganti')renderWorkerNameList();
+}
+function closeSheet(id){document.getElementById(id).classList.remove('open')}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2800)}
+
+// INIT
+updateAvatar(); renderNav(); renderTugas();
+
+// Auto-load dari URL hash (QR deep link)
+const hash=window.location.hash;
+if(hash.includes('#task=')){
+  const encoded=hash.split('#task=')[1];
+  try{
+    const json=decodeURIComponent(escape(atob(encoded)));
+    const payload=JSON.parse(json);
+    if(payload.type==='TASK'){
+      setTimeout(()=>onQRSuccess(`LAUNDRY_TASK:${encoded}`),500);
+    }
+  }catch(e){}
+  // Clean hash
+  history.replaceState(null,'',window.location.pathname);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0d0d14">
+<title>Khalif Laundry — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --bg:#0d0d14;--s1:#13131e;--s2:#1a1a28;--s3:#21212f;
+  --b1:#252538;--b2:#30304a;
+  --p:#a78bfa;--pg:rgba(167,139,250,0.15);
+  --g:#34d399;--gg:rgba(52,211,153,0.12);
+  --y:#fbbf24;--yg:rgba(251,191,36,0.12);
+  --r:#f87171;--rg:rgba(248,113,113,0.12);
+  --t:#e2e2f0;--t2:#8888aa;--t3:#44445a;
+  --ff:'Plus Jakarta Sans',sans-serif;
+  --fm:'JetBrains Mono',monospace;
+  --rad:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t);font-family:var(--ff)}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 90% 40% at 50% -5%,rgba(167,139,250,0.1) 0%,transparent 60%),
+  radial-gradient(ellipse 50% 40% at 100% 100%,rgba(52,211,153,0.04) 0%,transparent 55%)}
+
+/* LAYOUT */
+.app{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column;max-width:430px;margin:0 auto}
+.topbar{padding:16px 18px 12px;border-bottom:1px solid var(--b1);flex-shrink:0;background:rgba(13,13,20,0.9);backdrop-filter:blur(16px)}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:17px;font-weight:800;letter-spacing:-0.5px}
+.logo b{color:var(--p)}
+.badge{font-family:var(--fm);font-size:9px;padding:4px 9px;border-radius:6px;background:var(--pg);color:var(--p);border:1px solid rgba(167,139,250,0.3);letter-spacing:1px}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:84px}
+.bnav{position:absolute;bottom:0;left:0;right:0;background:rgba(13,13,20,0.96);backdrop-filter:blur(20px);border-top:1px solid var(--b1);display:flex;z-index:100}
+.nb{flex:1;padding:10px 4px 12px;text-align:center;cursor:pointer;border-top:2px solid transparent;transition:.2s;position:relative}
+.nb.on{border-top-color:var(--p)}
+.nb .ni{font-size:19px;line-height:1}
+.nb .nl{font-size:8.5px;color:var(--t3);margin-top:3px;letter-spacing:.6px;text-transform:uppercase;font-family:var(--fm)}
+.nb.on .nl{color:var(--p)}
+.nb .dot{position:absolute;top:8px;right:calc(50% - 16px);width:7px;height:7px;background:var(--r);border-radius:50%;border:2px solid var(--bg)}
+
+/* PAGE */
+.page{display:none;animation:fu .2s ease}
+.page.on{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* TYPE */
+.ptitle{font-size:21px;font-weight:800;letter-spacing:-.5px;margin-bottom:3px}
+.psub{font-size:11px;color:var(--t2);margin-bottom:16px;font-family:var(--fm)}
+.slabel{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-bottom:8px;font-family:var(--fm)}
+
+/* FORM */
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:11px;font-weight:600;color:var(--t2);margin-bottom:5px;letter-spacing:.4px;text-transform:uppercase}
+input,select,textarea{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:10px 13px;color:var(--t);font-family:var(--ff);font-size:14px;outline:none;transition:.2s;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--p);box-shadow:0 0 0 3px var(--pg)}
+select option{background:var(--s2)}
+textarea{resize:none;height:68px;line-height:1.5}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.frow .fg{margin-bottom:0}
+
+/* BTN */
+.btn{display:block;width:100%;padding:13px;border-radius:12px;border:none;font-family:var(--ff);font-weight:700;font-size:14px;cursor:pointer;transition:.18s;text-align:center;letter-spacing:.2px}
+.btn-p{background:var(--p);color:#fff}.btn-p:active{transform:scale(.98);opacity:.9}
+.btn-g{background:var(--g);color:#0d0d14}.btn-g:active{transform:scale(.98)}
+.btn-o{background:var(--s2);border:1px solid var(--b2);color:var(--t2)}
+.btn-d{background:var(--rg);border:1px solid rgba(248,113,113,0.25);color:var(--r)}
+.bsm{display:inline-flex;align-items:center;gap:4px;padding:6px 11px;border-radius:8px;border:none;font-family:var(--ff);font-weight:600;font-size:11px;cursor:pointer;transition:.15s;white-space:nowrap}
+
+/* CARD */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad);padding:15px;margin-bottom:10px}
+.card-p{border-color:rgba(167,139,250,0.3);background:rgba(167,139,250,0.04)}
+.card-g{border-color:rgba(52,211,153,0.25);background:rgba(52,211,153,0.04)}
+
+/* PILLS */
+.pill{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.pill-w{background:var(--yg);color:var(--y);border:1px solid rgba(251,191,36,.25)}
+.pill-d{background:var(--gg);color:var(--g);border:1px solid rgba(52,211,153,.2)}
+
+/* STAT */
+.sgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.sbox{background:var(--s1);border:1px solid var(--b1);border-radius:12px;padding:12px 8px;text-align:center}
+.sval{font-size:18px;font-weight:800;line-height:1}
+.sval.vp{color:var(--p)}.sval.vg{color:var(--g)}.sval.vy{color:var(--y)}
+.slbl{font-size:9px;color:var(--t3);margin-top:4px;text-transform:uppercase;letter-spacing:.8px;font-family:var(--fm)}
+
+/* SERVICE ROW */
+.svc-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--b1)}
+.svc-row:last-child{border-bottom:none}
+.svc-name-input{flex:1;background:transparent;border:none;color:var(--t);font-size:13px;font-weight:600;padding:4px 0;border-bottom:1px dashed var(--b2);border-radius:0}
+.svc-name-input:focus{border-bottom-color:var(--p);box-shadow:none}
+.svc-price-wrap{display:flex;align-items:center;gap:4px;background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:4px 8px}
+.svc-price-wrap span{font-size:10px;color:var(--t3);font-family:var(--fm)}
+.svc-price{width:70px;background:transparent;border:none;color:var(--y);font-family:var(--fm);font-size:13px;font-weight:600;text-align:right;padding:0}
+.svc-price:focus{box-shadow:none;border:none}
+.svc-unit{font-size:9px;color:var(--t3);font-family:var(--fm);white-space:nowrap}
+
+/* TASK ITEM */
+.titem{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad);padding:13px;margin-bottom:8px}
+.titem-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.titem-worker{font-weight:800;font-size:15px}
+.titem-date{font-size:10px;color:var(--t3);font-family:var(--fm);margin-top:1px}
+.cust-entry{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--b1);font-size:13px}
+.cust-entry:last-child{border-bottom:none}
+.ce-name{font-weight:600}
+.ce-svc{font-size:11px;color:var(--t2);margin-top:1px}
+.ce-note{font-size:11px;color:var(--y);margin-top:2px}
+
+/* REKAP */
+.wrk-block{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad);margin-bottom:8px;overflow:hidden}
+.wrk-head{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;cursor:pointer}
+.wrk-name{font-weight:800;font-size:15px}
+.wrk-upah{font-weight:800;font-size:16px;color:var(--g);font-family:var(--fm)}
+.wrk-meta{display:flex;gap:12px;padding:0 15px 10px;font-size:11px;color:var(--t2)}
+.wdet{display:none;border-top:1px solid var(--b1)}
+.wdet.open{display:block}
+.wdet-row{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 15px;border-bottom:1px solid var(--b1);font-size:12px}
+.wdet-row:last-child{border-bottom:none}
+.wdet-foot{display:flex;justify-content:space-between;padding:11px 15px;background:var(--s2);font-weight:800;font-size:13px}
+
+/* SEARCH */
+.sbox-wrap{position:relative;margin-bottom:14px}
+.sbox-wrap input{padding-left:36px}
+.sico{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px}
+
+/* MONTH */
+.mrow{display:flex;gap:7px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.mrow::-webkit-scrollbar{display:none}
+.mchip{flex-shrink:0;padding:6px 13px;border-radius:20px;font-size:11px;font-weight:600;background:var(--s2);border:1px solid var(--b1);color:var(--t2);cursor:pointer;transition:.15s;font-family:var(--fm)}
+.mchip.on{background:var(--pg);border-color:rgba(167,139,250,.4);color:var(--p)}
+
+/* QR MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px)}
+.overlay.open{display:flex}
+.sheet{background:var(--s1);border:1px solid var(--b2);border-radius:20px 20px 0 0;padding:22px;width:100%;max-width:430px;max-height:88vh;overflow-y:auto;animation:su .25s ease}
+@keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-title{font-size:17px;font-weight:800;margin-bottom:4px}
+.sheet-sub{font-size:11px;color:var(--t2);margin-bottom:18px;font-family:var(--fm)}
+.sheet-close{float:right;background:none;border:none;color:var(--t2);font-size:22px;cursor:pointer;margin-top:-4px}
+#qr-box{display:flex;justify-content:center;margin:16px 0}
+#qr-box canvas,#qr-box img{border-radius:12px!important}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--s2);border:1px solid var(--b2);color:var(--t);padding:10px 18px;border-radius:24px;font-size:12px;font-weight:500;z-index:999;opacity:0;transition:.25s;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.divider{height:1px;background:var(--b1);margin:14px 0}
+.empty{text-align:center;padding:36px 16px;color:var(--t3)}
+.empty-ico{font-size:38px;margin-bottom:8px}
+.empty-txt{font-size:13px}
+mark{background:rgba(167,139,250,.25);color:var(--p);border-radius:3px;padding:0 2px}
+input[type=file]{display:none}
+
+/* ADD SERVICE BTN */
+.add-svc-btn{width:100%;padding:9px;border:1px dashed var(--b2);border-radius:10px;background:transparent;color:var(--t2);font-family:var(--ff);font-size:13px;cursor:pointer;margin-top:8px;transition:.15s}
+.add-svc-btn:hover{border-color:var(--p);color:var(--p)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="logo">Khalif <b>Laundry</b></div>
+      <span class="badge">👑 ADMIN</span>
+    </div>
+  </div>
+  <div class="content">
+    <!-- BUAT TASK -->
+    <div class="page on" id="pg-buat">
+      <div class="ptitle">Buat Task</div>
+      <div class="psub">Assign pekerjaan ke karyawan</div>
+      <div class="card card-p">
+        <div class="frow">
+          <div class="fg">
+            <label>Karyawan</label>
+            <select id="t-worker"></select>
+          </div>
+          <div class="fg">
+            <label>Tanggal</label>
+            <input type="date" id="t-date">
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="slabel">Daftar Cucian Customer</div>
+        <div id="items-list"><div class="empty-txt" style="color:var(--t3);font-size:13px;padding:10px 0;text-align:center">Belum ada item</div></div>
+        <button class="add-svc-btn" onclick="openAddItem()">+ Tambah Customer</button>
+      </div>
+      <div style="height:10px"></div>
+      <button class="btn btn-p" onclick="buatTask()">🔲 Buat Task & Generate QR</button>
+    </div>
+
+    <!-- MASUK -->
+    <div class="page" id="pg-masuk">
+      <div class="ptitle">Hasil Masuk</div>
+      <div class="psub">Import laporan dari karyawan</div>
+      <div class="card card-g" style="text-align:center;padding:22px">
+        <div style="font-size:36px;margin-bottom:8px">📥</div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:5px">Import File Hasil Kerja</div>
+        <div style="font-size:12px;color:var(--t2);margin-bottom:14px">File .json dari karyawan via WhatsApp</div>
+        <label for="file-import" class="btn btn-g" style="display:inline-block;width:auto;padding:10px 22px;cursor:pointer">📂 Pilih File</label>
+        <input type="file" id="file-import" accept=".json" onchange="importHasil(this)">
+      </div>
+      <div id="import-prev" style="display:none">
+        <div class="divider"></div>
+        <div class="slabel">Preview Import</div>
+        <div id="import-content"></div>
+        <button class="btn btn-g" onclick="konfirmImport()" style="margin-top:4px">✅ Simpan ke Data</button>
+        <div style="height:8px"></div>
+        <button class="btn btn-o" onclick="batalImport()">Batal</button>
+      </div>
+      <div class="divider"></div>
+      <div class="slabel">Task Menunggu Laporan</div>
+      <div id="pending-list"></div>
+    </div>
+
+    <!-- REKAP -->
+    <div class="page" id="pg-rekap">
+      <div class="ptitle">Rekap & Gaji</div>
+      <div class="psub">Ringkasan upah bulanan</div>
+      <div class="mrow" id="mrow"></div>
+      <div class="sgrid" id="rekap-stats"></div>
+      <div class="slabel">Per Karyawan</div>
+      <div id="rekap-workers"></div>
+    </div>
+
+    <!-- CARI -->
+    <div class="page" id="pg-cari">
+      <div class="ptitle">Cari Customer</div>
+      <div class="psub">Tracking order & verifikasi klaim</div>
+      <div class="sbox-wrap">
+        <span class="sico">🔍</span>
+        <input type="text" id="search-q" placeholder="Nama customer..." oninput="doSearch(this.value)">
+      </div>
+      <div id="search-res"></div>
+    </div>
+
+    <!-- SETTING -->
+    <div class="page" id="pg-setting">
+      <div class="ptitle">Pengaturan</div>
+      <div class="psub">Layanan, tarif & karyawan</div>
+
+      <div class="slabel">Jenis Layanan & Tarif</div>
+      <div class="card" id="svc-list-card"></div>
+      <button class="add-svc-btn" id="add-svc-global" onclick="tambahLayanan()">+ Tambah Jenis Layanan</button>
+
+      <div class="divider"></div>
+      <div class="slabel">Karyawan</div>
+      <div class="card" id="worker-list-card"></div>
+      <div class="frow" style="margin-top:10px">
+        <input type="text" id="new-worker" placeholder="Nama karyawan baru">
+        <button class="btn btn-p" onclick="tambahKaryawan()">+ Tambah</button>
+      </div>
+
+      <div class="divider"></div>
+      <div class="slabel">Link App Karyawan</div>
+      <div class="card card-p">
+        <div style="font-size:13px;color:var(--t2);margin-bottom:12px">Generate QR untuk karyawan install app di HP mereka</div>
+        <div class="fg">
+          <label>URL App Karyawan</label>
+          <input type="text" id="worker-url" placeholder="https://khaliflaundry.github.io/worker" value="">
+        </div>
+        <button class="btn btn-p" onclick="showWorkerAppQR()">🔲 Tampilkan QR Install App</button>
+      </div>
+    </div>
+  </div>
+  <div class="bnav" id="bnav"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- SHEET: ADD ITEM -->
+<div class="overlay" id="sh-item">
+  <div class="sheet">
+    <button class="sheet-close" onclick="closeSheet('sh-item')">×</button>
+    <div class="sheet-title">Tambah Customer</div>
+    <div class="sheet-sub">Detail cucian yang dikerjakan</div>
+    <div class="fg"><label>Nama Customer</label><input type="text" id="ai-cust" placeholder="cth: Bu Sari, Pak Rudi"></div>
+    <div class="fg"><label>Jenis Layanan</label><select id="ai-svc"></select></div>
+    <div class="fg" id="ai-estkg-wrap"><label>Estimasi KG</label><input type="number" id="ai-estkg" placeholder="cth: 4.5" step="0.5" min="0"></div>
+    <div class="fg" id="ai-qty-wrap" style="display:none"><label>Estimasi Jumlah Item</label><input type="number" id="ai-qty" placeholder="cth: 2" min="0"></div>
+    <div class="fg"><label>Catatan Khusus</label><textarea id="ai-note" placeholder="cth: ada noda kopi, ada sobekan kecil..."></textarea></div>
+    <button class="btn btn-p" onclick="simpanItem()">Tambah ✓</button>
+  </div>
+</div>
+
+<!-- SHEET: QR TASK -->
+<div class="overlay" id="sh-qr">
+  <div class="sheet">
+    <button class="sheet-close" onclick="closeSheet('sh-qr')">×</button>
+    <div class="sheet-title" id="qr-title">QR Task</div>
+    <div class="sheet-sub" id="qr-sub">Minta karyawan scan QR ini</div>
+    <div id="qr-box"></div>
+    <div id="qr-info" style="text-align:center;font-size:12px;color:var(--t2);margin-bottom:14px"></div>
+    <button class="btn btn-p" onclick="shareQR()" style="margin-bottom:8px">📤 Share via WhatsApp</button>
+    <button class="btn btn-o" onclick="closeSheet('sh-qr')">Tutup</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// DB
+// ══════════════════════════════════════════
+let DB = {
+  workers: ['Evi','Siti','Rini','Dewi','Budi','Eko','Marlim'],
+  services: [
+    {id:'s1',name:'Cuci + Setrika',unit:'kg',price:2500},
+    {id:'s2',name:'Cuci Saja',unit:'kg',price:1500},
+    {id:'s3',name:'Setrika Saja',unit:'kg',price:1000},
+    {id:'s4',name:'Lipat Saja',unit:'kg',price:800},
+    {id:'s5',name:'Sprei / Bed Cover',unit:'item',price:5000},
+    {id:'s6',name:'Jaket',unit:'item',price:4000},
+    {id:'s7',name:'Gordyn',unit:'item',price:15000},
+  ],
+  tasks:[],
+  hasil:[],
+};
+function loadDB(){const d=localStorage.getItem('lk_adm2');if(d)DB=JSON.parse(d)}
+function saveDB(){localStorage.setItem('lk_adm2',JSON.stringify(DB))}
+loadDB();
+
+let activePg='buat', openRekap=null, pendingImport=null;
+let currentItems=[], currentQRData=null;
+
+// ══════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════
+const TABS=[
+  {id:'buat',ico:'📋',lbl:'Task'},
+  {id:'masuk',ico:'📥',lbl:'Masuk'},
+  {id:'rekap',ico:'💰',lbl:'Rekap'},
+  {id:'cari',ico:'🔎',lbl:'Cari'},
+  {id:'setting',ico:'⚙️',lbl:'Setting'},
+];
+function renderNav(){
+  const pend=DB.tasks.filter(t=>t.status==='sent').length;
+  document.getElementById('bnav').innerHTML=TABS.map(t=>`
+    <div class="nb${t.id===activePg?' on':''}" onclick="goTo('${t.id}')">
+      <div class="ni">${t.ico}</div>
+      ${t.id==='masuk'&&pend>0?`<div class="dot"></div>`:''}
+      <div class="nl">${t.lbl}</div>
+    </div>`).join('');
+}
+function goTo(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  activePg=id; renderNav();
+  if(id==='buat')renderBuat();
+  if(id==='masuk')renderMasuk();
+  if(id==='rekap')renderRekap();
+  if(id==='setting')renderSetting();
+  if(id==='cari')document.getElementById('search-res').innerHTML=`<div class="empty"><div class="empty-ico">🔍</div><div class="empty-txt">Ketik nama customer</div></div>`;
+}
+
+// ══════════════════════════════════════════
+// PAGE: BUAT TASK
+// ══════════════════════════════════════════
+function renderBuat(){
+  const sel=document.getElementById('t-worker');
+  const cur=sel.value;
+  sel.innerHTML=DB.workers.map(w=>`<option value="${w}"${w===cur?' selected':''}>${w}</option>`).join('');
+  if(!document.getElementById('t-date').value) document.getElementById('t-date').value=todayStr();
+  renderItemsList();
+}
+
+function renderItemsList(){
+  const el=document.getElementById('items-list');
+  if(!currentItems.length){el.innerHTML=`<div style="color:var(--t3);font-size:13px;padding:10px 0;text-align:center">Belum ada item cucian</div>`;return}
+  el.innerHTML=currentItems.map((it,i)=>{
+    const svc=DB.services.find(s=>s.id===it.svcId)||{name:it.svcId,unit:'kg'};
+    return `<div class="cust-entry">
+      <div>
+        <div class="ce-name">${it.customer}</div>
+        <div class="ce-svc">${svc.name}${it.estkg?` · ~${it.estkg} kg`:''}${it.qty?` · ~${it.qty} item`:''}</div>
+        ${it.note?`<div class="ce-note">📝 ${it.note}</div>`:''}
+      </div>
+      <button class="bsm" style="background:var(--rg);border:1px solid rgba(248,113,113,.25);color:var(--r)" onclick="hapusItem(${i})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function openAddItem(){
+  // populate services dropdown
+  const sel=document.getElementById('ai-svc');
+  sel.innerHTML=DB.services.map(s=>`<option value="${s.id}">${s.name} (per ${s.unit})</option>`).join('');
+  checkSvcUnit();
+  document.getElementById('ai-cust').value='';
+  document.getElementById('ai-estkg').value='';
+  document.getElementById('ai-qty').value='';
+  document.getElementById('ai-note').value='';
+  openSheet('sh-item');
+  setTimeout(()=>document.getElementById('ai-cust').focus(),300);
+}
+
+document.getElementById('ai-svc').addEventListener('change',checkSvcUnit);
+function checkSvcUnit(){
+  const sel=document.getElementById('ai-svc');
+  const svc=DB.services.find(s=>s.id===sel.value);
+  const isItem=svc&&svc.unit==='item';
+  document.getElementById('ai-estkg-wrap').style.display=isItem?'none':'block';
+  document.getElementById('ai-qty-wrap').style.display=isItem?'block':'none';
+}
+
+function simpanItem(){
+  const cust=document.getElementById('ai-cust').value.trim();
+  if(!cust){toast('❌ Nama customer wajib diisi');return}
+  const svcId=document.getElementById('ai-svc').value;
+  const svc=DB.services.find(s=>s.id===svcId);
+  const estkg=svc&&svc.unit!=='item'?parseFloat(document.getElementById('ai-estkg').value||0):0;
+  const qty=svc&&svc.unit==='item'?parseInt(document.getElementById('ai-qty').value||0):0;
+  const note=document.getElementById('ai-note').value.trim();
+  currentItems.push({customer:cust,svcId,estkg,qty,note});
+  closeSheet('sh-item');
+  renderItemsList();
+  toast('✅ Item ditambahkan');
+}
+function hapusItem(i){currentItems.splice(i,1);renderItemsList()}
+
+function buatTask(){
+  const worker=document.getElementById('t-worker').value;
+  const date=document.getElementById('t-date').value;
+  if(!worker){toast('❌ Pilih karyawan');return}
+  if(!currentItems.length){toast('❌ Tambah minimal 1 item');return}
+
+  const task={
+    id:'T'+Date.now(), worker, date,
+    items:currentItems.map((it,i)=>({...it,no:i+1})),
+    status:'sent', createdAt:new Date().toISOString()
+  };
+  DB.tasks.push(task); saveDB();
+
+  // Data for QR — compact
+  const payload={
+    type:'TASK', taskId:task.id, worker, date,
+    items:task.items.map(it=>({
+      no:it.no, c:it.customer, s:it.svcId,
+      k:it.estkg||0, q:it.qty||0, n:it.note||''
+    }))
+  };
+
+  currentQRData=payload;
+  showTaskQR(payload, worker, date);
+  currentItems=[];
+  renderItemsList();
+}
+
+function showTaskQR(payload, worker, date){
+  document.getElementById('qr-title').textContent=`Task untuk ${worker}`;
+  document.getElementById('qr-sub').textContent=`${formatDate(date)} · ${payload.items.length} item`;
+  document.getElementById('qr-info').textContent='Minta '+worker+' scan QR ini dengan kamera HP';
+
+  const box=document.getElementById('qr-box');
+  box.innerHTML='';
+
+  // Encode data as URL with hash — worker app reads it
+  const workerUrl=document.getElementById('worker-url')||{value:''};
+  const baseUrl=(workerUrl&&workerUrl.value)||'';
+
+  const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+
+  // If no URL set, show data QR with instruction
+  let qrContent='';
+  if(baseUrl&&baseUrl.startsWith('http')){
+    qrContent=`${baseUrl}#task=${encoded}`;
+  } else {
+    qrContent=`LAUNDRY_TASK:${encoded}`;
+  }
+
+  try{
+    new QRCode(box,{text:qrContent,width:220,height:220,colorDark:'#a78bfa',colorLight:'#13131e',correctLevel:QRCode.CorrectLevel.M});
+  } catch(e){
+    // Fallback: data too large
+    box.innerHTML=`<div style="padding:20px;background:var(--s2);border-radius:12px;text-align:center;font-size:12px;color:var(--t2)">
+      QR terlalu padat (terlalu banyak item).<br>Gunakan Share File sebagai gantinya.
+    </div>`;
+  }
+
+  openSheet('sh-qr');
+}
+
+function shareQR(){
+  if(!currentQRData){return}
+  const payload=currentQRData;
+  const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  const wUrl=(document.getElementById('worker-url')||{value:''}).value;
+  let url='';
+  if(wUrl&&wUrl.startsWith('http')){
+    url=`${wUrl}#task=${encoded}`;
+  }
+
+  // Build WA text
+  const lines=payload.items.map(it=>{
+    const svc=DB.services.find(s=>s.id===it.s)||{name:it.s};
+    return `${it.no}. ${it.c} — ${svc.name}${it.k?` ~${it.k}kg`:''}${it.q?` ~${it.q} item`:''}${it.n?' 📝'+it.n:''}`;
+  }).join('\n');
+
+  const msg=`🧺 *Task Laundry Khalif*\n👤 ${payload.worker}\n📅 ${formatDate(payload.date)}\n\n${lines}\n\n${url?'🔗 Buka di app:\n'+url+'\n\n':''}Scan QR dari ibu ya!`;
+
+  const waUrl=`https://wa.me/?text=${encodeURIComponent(msg)}`;
+  window.open(waUrl,'_blank');
+}
+
+function showWorkerAppQR(){
+  const url=document.getElementById('worker-url').value.trim();
+  if(!url||!url.startsWith('http')){toast('❌ Masukkan URL app karyawan dulu');return}
+  document.getElementById('qr-title').textContent='Install App Karyawan';
+  document.getElementById('qr-sub').textContent='Scan untuk buka & install app';
+  document.getElementById('qr-info').textContent='Chrome → buka URL → Add to Home Screen';
+  const box=document.getElementById('qr-box');
+  box.innerHTML='';
+  new QRCode(box,{text:url,width:220,height:220,colorDark:'#34d399',colorLight:'#13131e',correctLevel:QRCode.CorrectLevel.M});
+  currentQRData=null;
+  openSheet('sh-qr');
+}
+
+// ══════════════════════════════════════════
+// PAGE: MASUK
+// ══════════════════════════════════════════
+function renderMasuk(){
+  const pend=DB.tasks.filter(t=>t.status==='sent');
+  document.getElementById('pending-list').innerHTML=pend.length===0?
+    `<div class="empty"><div class="empty-ico">🎉</div><div class="empty-txt">Semua task sudah dilaporkan</div></div>`:
+    pend.map(t=>`
+      <div class="titem">
+        <div class="titem-top">
+          <div><div class="titem-worker">${t.worker}</div><div class="titem-date">${formatDate(t.date)}</div></div>
+          <span class="pill pill-w">Menunggu</span>
+        </div>
+        <div style="font-size:12px;color:var(--t2)">${t.items.length} item: ${t.items.map(i=>i.customer).join(', ')}</div>
+      </div>`).join('');
+}
+
+function importHasil(input){
+  const f=input.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      if(d.type!=='HASIL'){toast('❌ Bukan file hasil kerja');return}
+      pendingImport=d;
+      renderImportPrev(d);
+      document.getElementById('import-prev').style.display='block';
+      toast('✅ File terbaca!');
+    }catch{toast('❌ File tidak valid')}
+  };
+  r.readAsText(f);
+  input.value='';
+}
+
+function renderImportPrev(d){
+  const items=d.items||[];
+  const totalKg=items.reduce((s,it)=>s+(it.actualKg||0),0);
+  document.getElementById('import-content').innerHTML=`
+    <div class="card card-g" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div><div style="font-weight:800;font-size:15px">${d.worker}</div>
+        <div style="font-size:11px;color:var(--t2);font-family:var(--fm)">${formatDate(d.date)}</div></div>
+        <span class="pill pill-d">Siap Import</span>
+      </div>
+      ${items.map(it=>{
+        const svc=DB.services.find(s=>s.id===it.svcId)||{name:it.svcName||it.svcId||'-'};
+        return `<div class="cust-entry">
+          <div>
+            <div class="ce-name">${it.customer}</div>
+            <div class="ce-svc">${svc.name} · ${it.jamMulai||'-'} – ${it.jamSelesai||'-'}</div>
+          </div>
+          <div style="text-align:right;font-family:var(--fm);font-size:12px">
+            ${it.actualKg?`<div style="color:var(--g)">${it.actualKg} kg</div>`:''}
+            ${it.actualQty?`<div style="color:var(--g)">${it.actualQty} item</div>`:''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function konfirmImport(){
+  if(!pendingImport)return;
+  const d=pendingImport;
+  if(DB.hasil.find(h=>h.taskId===d.taskId)){toast('⚠️ Sudah pernah di-import');return}
+  DB.hasil.push({...d,importedAt:new Date().toISOString()});
+  const t=DB.tasks.find(t=>t.id===d.taskId);
+  if(t)t.status='done';
+  saveDB();
+  document.getElementById('import-prev').style.display='none';
+  pendingImport=null;
+  renderMasuk();
+  toast('✅ Data tersimpan!');
+}
+
+function batalImport(){
+  pendingImport=null;
+  document.getElementById('import-prev').style.display='none';
+}
+
+// ══════════════════════════════════════════
+// PAGE: REKAP
+// ══════════════════════════════════════════
+let activeMonth=monthKey(new Date());
+function renderRekap(){
+  const months=[...new Set(DB.hasil.map(h=>h.date.slice(0,7)))].sort().reverse();
+  if(!months.includes(activeMonth)&&months.length)activeMonth=months[0];
+
+  document.getElementById('mrow').innerHTML=months.length===0?
+    `<div style="font-size:12px;color:var(--t3)">Belum ada data</div>`:
+    months.map(m=>`<div class="mchip${m===activeMonth?' on':''}" onclick="setMonth('${m}')">${monthLbl(m)}</div>`).join('');
+
+  const mh=DB.hasil.filter(h=>h.date.slice(0,7)===activeMonth);
+  const allIt=mh.flatMap(h=>(h.items||[]).map(it=>({...it,worker:h.worker,date:h.date})));
+  const totalUpah=allIt.reduce((s,it)=>s+calcUpah(it),0);
+  const totalKg=allIt.reduce((s,it)=>s+(it.actualKg||0),0);
+  const totalItem=allIt.reduce((s,it)=>s+(it.actualQty||0),0);
+
+  document.getElementById('rekap-stats').innerHTML=`
+    <div class="sbox"><div class="sval vp">Rp${fmt(totalUpah/1000)}k</div><div class="slbl">Total Upah</div></div>
+    <div class="sbox"><div class="sval vg">${totalKg.toFixed(1)}</div><div class="slbl">Total KG</div></div>
+    <div class="sbox"><div class="sval vy">${totalItem}</div><div class="slbl">Total Item</div></div>`;
+
+  const wmap={};
+  allIt.forEach(it=>{
+    if(!wmap[it.worker])wmap[it.worker]={upah:0,kg:0,items:0,list:[]};
+    wmap[it.worker].upah+=calcUpah(it);
+    wmap[it.worker].kg+=(it.actualKg||0);
+    wmap[it.worker].items+=(it.actualQty||0);
+    wmap[it.worker].list.push(it);
+  });
+
+  document.getElementById('rekap-workers').innerHTML=Object.keys(wmap).length===0?
+    `<div class="empty"><div class="empty-ico">📊</div><div class="empty-txt">Belum ada data bulan ini</div></div>`:
+    Object.entries(wmap).map(([w,d])=>`
+      <div class="wrk-block">
+        <div class="wrk-head" onclick="toggleRekap('${w}')">
+          <div><div class="wrk-name">👤 ${w}</div></div>
+          <div class="wrk-upah">Rp ${d.upah.toLocaleString('id')}</div>
+        </div>
+        <div class="wrk-meta">
+          <span>${d.list.length} order</span>
+          ${d.kg>0?`<span>${d.kg.toFixed(1)} kg</span>`:''}
+          ${d.items>0?`<span>${d.items} item</span>`:''}
+        </div>
+        <div class="wdet${openRekap===w?' open':''}">
+          ${d.list.map(it=>{
+            const svc=DB.services.find(s=>s.id===it.svcId)||{name:it.svcName||'-'};
+            return `<div class="wdet-row">
+              <div>
+                <div style="font-weight:600">${it.customer}</div>
+                <div style="color:var(--t2);font-size:11px;font-family:var(--fm)">${it.date} · ${it.jamMulai||'--'}–${it.jamSelesai||'--'}</div>
+                <div style="color:var(--t3);font-size:11px">${svc.name}${it.catatan?' · 📝'+it.catatan:''}</div>
+              </div>
+              <div style="text-align:right">
+                ${it.actualKg?`<div style="color:var(--g);font-family:var(--fm);font-size:12px">${it.actualKg}kg</div>`:''}
+                ${it.actualQty?`<div style="color:var(--g);font-family:var(--fm);font-size:12px">${it.actualQty}item</div>`:''}
+                <div style="color:var(--y);font-weight:700;font-size:12px">Rp ${calcUpah(it).toLocaleString('id')}</div>
+              </div>
+            </div>`;
+          }).join('')}
+          <div class="wdet-foot">
+            <span>Total Gaji ${w}</span>
+            <span style="color:var(--g)">Rp ${d.upah.toLocaleString('id')}</span>
+          </div>
+        </div>
+      </div>`).join('');
+}
+function setMonth(m){activeMonth=m;openRekap=null;renderRekap()}
+function toggleRekap(w){openRekap=openRekap===w?null:w;renderRekap()}
+
+// ══════════════════════════════════════════
+// PAGE: CARI
+// ══════════════════════════════════════════
+function doSearch(q){
+  const el=document.getElementById('search-res');
+  if(!q||q.length<2){el.innerHTML=`<div class="empty"><div class="empty-ico">🔍</div><div class="empty-txt">Ketik minimal 2 huruf</div></div>`;return}
+  const all=DB.hasil.flatMap(h=>(h.items||[]).map(it=>({...it,worker:h.worker,date:h.date})));
+  const found=all.filter(it=>it.customer&&it.customer.toLowerCase().includes(q.toLowerCase()));
+  if(!found.length){el.innerHTML=`<div class="empty"><div class="empty-ico">😕</div><div class="empty-txt">Tidak ditemukan: "${q}"</div></div>`;return}
+  const hl=t=>t.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`,'gi'),'<mark>$1</mark>');
+  el.innerHTML=found.map(it=>{
+    const svc=DB.services.find(s=>s.id===it.svcId)||{name:it.svcName||'-'};
+    return `<div class="titem" style="margin-bottom:10px">
+      <div class="titem-top">
+        <div><div class="titem-worker">${hl(it.customer)}</div><div class="titem-date">${formatDate(it.date)}</div></div>
+        <span class="pill pill-d">Selesai</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;font-size:12px">
+        <div style="color:var(--t2)">Dikerjakan<br><strong style="color:var(--t)">${it.worker}</strong></div>
+        <div style="color:var(--t2)">Jam Mulai<br><strong style="color:var(--p);font-family:var(--fm)">${it.jamMulai||'–'}</strong></div>
+        <div style="color:var(--t2)">Layanan<br><strong style="color:var(--t)">${svc.name}</strong></div>
+        <div style="color:var(--t2)">Jam Selesai<br><strong style="color:var(--p);font-family:var(--fm)">${it.jamSelesai||'–'}</strong></div>
+      </div>
+      ${it.catatan?`<div style="margin-top:8px;padding:7px 10px;background:var(--yg);border:1px solid rgba(251,191,36,.2);border-radius:8px;font-size:12px;color:var(--y)">📝 ${it.catatan}</div>`:''}
+      ${it.actualKg||it.actualQty?`<div style="margin-top:6px;font-size:12px;color:var(--g);font-family:var(--fm)">${it.actualKg?it.actualKg+'kg ':''} ${it.actualQty?it.actualQty+' item':''} → Rp ${calcUpah(it).toLocaleString('id')}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// PAGE: SETTING — Editable Services
+// ══════════════════════════════════════════
+function renderSetting(){
+  // Services
+  document.getElementById('svc-list-card').innerHTML=DB.services.map((s,i)=>`
+    <div class="svc-row">
+      <input class="svc-name-input" value="${s.name}" onchange="updateSvcName(${i},this.value)" placeholder="Nama layanan">
+      <select style="width:65px;margin:0 6px;padding:4px 6px;font-size:11px;background:var(--s2);border:1px solid var(--b1);border-radius:6px;color:var(--t2)" onchange="updateSvcUnit(${i},this.value)">
+        <option value="kg"${s.unit==='kg'?' selected':''}>/ kg</option>
+        <option value="item"${s.unit==='item'?' selected':''}>/ item</option>
+      </select>
+      <div class="svc-price-wrap">
+        <span>Rp</span>
+        <input class="svc-price" type="number" value="${s.price}" onchange="updateSvcPrice(${i},this.value)">
+      </div>
+      <button class="bsm" style="background:var(--rg);border:1px solid rgba(248,113,113,.25);color:var(--r);margin-left:6px" onclick="hapusLayanan(${i})">✕</button>
+    </div>`).join('');
+
+  // Workers
+  document.getElementById('worker-list-card').innerHTML=DB.workers.map((w,i)=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--b1)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:30px;height:30px;background:var(--pg);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:var(--p)">${w[0]}</div>
+        <span style="font-size:14px;font-weight:600">${w}</span>
+      </div>
+      <button class="bsm" style="background:var(--rg);border:1px solid rgba(248,113,113,.25);color:var(--r)" onclick="hapusKaryawan(${i})">Hapus</button>
+    </div>`).join('');
+}
+
+function updateSvcName(i,v){DB.services[i].name=v;saveDB()}
+function updateSvcUnit(i,v){DB.services[i].unit=v;saveDB()}
+function updateSvcPrice(i,v){DB.services[i].price=parseFloat(v)||0;saveDB();toast('Tarif disimpan ✓')}
+function hapusLayanan(i){
+  if(DB.services.length<=1){toast('❌ Minimal 1 layanan');return}
+  DB.services.splice(i,1);saveDB();renderSetting();toast('Layanan dihapus')
+}
+function tambahLayanan(){
+  DB.services.push({id:'s'+Date.now(),name:'Layanan Baru',unit:'kg',price:0});
+  saveDB();renderSetting();toast('✅ Layanan ditambahkan, edit namanya');
+}
+function tambahKaryawan(){
+  const nm=document.getElementById('new-worker').value.trim();
+  if(!nm){toast('❌ Nama wajib diisi');return}
+  if(DB.workers.includes(nm)){toast('⚠️ Nama sudah ada');return}
+  DB.workers.push(nm);saveDB();renderSetting();
+  document.getElementById('new-worker').value='';toast(`✅ ${nm} ditambahkan`);
+}
+function hapusKaryawan(i){DB.workers.splice(i,1);saveDB();renderSetting();toast('Karyawan dihapus')}
+
+// ══════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════
+function calcUpah(it){
+  const svc=DB.services.find(s=>s.id===it.svcId);
+  if(!svc)return 0;
+  return svc.unit==='item'?(it.actualQty||0)*svc.price:(it.actualKg||0)*svc.price;
+}
+function todayStr(){return new Date().toISOString().slice(0,10)}
+function monthKey(d){return d.toISOString().slice(0,7)}
+function monthLbl(mk){const[y,m]=mk.split('-');return new Date(y,m-1).toLocaleDateString('id-ID',{month:'short',year:'numeric'})}
+function formatDate(d){return new Date(d+'T00:00:00').toLocaleDateString('id-ID',{weekday:'short',day:'numeric',month:'short',year:'numeric'})}
+function fmt(n){return n.toFixed(0)}
+function openSheet(id){document.getElementById(id).classList.add('open')}
+function closeSheet(id){document.getElementById(id).classList.remove('open')}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2800)}
+
+// INIT
+renderNav();renderBuat();
+document.getElementById('t-date').value=todayStr();
+</script>
+</body>
+</html>
