@@ -319,8 +319,9 @@ let DB = {
   ],
   tasks:[],
   hasil:[],
+  workerUrl:'',
 };
-function loadDB(){const d=localStorage.getItem('lk_adm2');if(d)DB=JSON.parse(d)}
+function loadDB(){const d=localStorage.getItem('lk_adm2');if(d){const p=JSON.parse(d);DB={...DB,...p}}}
 function saveDB(){localStorage.setItem('lk_adm2',JSON.stringify(DB))}
 loadDB();
 
@@ -459,7 +460,7 @@ function showTaskQR(payload, worker, date){
 
   // Encode data as URL with hash — worker app reads it
   const workerUrl=document.getElementById('worker-url')||{value:''};
-  const baseUrl=(workerUrl&&workerUrl.value)||'';
+  const baseUrl=(workerUrl&&workerUrl.value)||DB.workerUrl||'';
 
   const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
 
@@ -487,7 +488,7 @@ function shareQR(){
   if(!currentQRData){return}
   const payload=currentQRData;
   const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-  const wUrl=(document.getElementById('worker-url')||{value:''}).value;
+  const wUrl=(document.getElementById('worker-url')||{value:''}).value||DB.workerUrl||'';
   let url='';
   if(wUrl&&wUrl.startsWith('http')){
     url=`${wUrl}#task=${encoded}`;
@@ -715,6 +716,11 @@ function renderSetting(){
       </div>
       <button class="bsm" style="background:var(--rg);border:1px solid rgba(248,113,113,.25);color:var(--r);margin-left:6px" onclick="hapusLayanan(${i})">✕</button>
     </div>`).join('');
+
+  // Worker URL — load dari DB
+  const wuEl=document.getElementById("worker-url");
+  if(wuEl&&DB.workerUrl)wuEl.value=DB.workerUrl;
+  if(wuEl)wuEl.onchange=function(){DB.workerUrl=this.value.trim();saveDB();};
 
   // Workers
   document.getElementById('worker-list-card').innerHTML=DB.workers.map((w,i)=>`
